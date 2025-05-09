@@ -18,6 +18,8 @@ class MULDIV:
         if operation == "MUL":
             self.result = operand1 * operand2
         elif operation == "DIV":
+            if operand2 == 0:
+                operand2 = 1 #This is done becuase the output of load is random, and sometimes it happens that the output of a sub that uses the output of a load becomes 0.
             self.result = operand1 / operand2
 
     def getResult(self):

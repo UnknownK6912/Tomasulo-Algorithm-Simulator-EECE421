@@ -14,8 +14,9 @@ class LS:
         self.ccExec = 0
         self.busy = True
         self.tag = tag
+        #in theory this should load from memory, but for the sake of simplicity we will just generate a random number
         if self.operation == "load":
-            self.result = random.randint(0, 100)
+            self.result = random.randint(1, 100)
 
     def getResult(self):
         if self.operation == "load":
@@ -23,12 +24,13 @@ class LS:
             self.result = None
             return (temp,self.tag)
         else:
-            return None
+            return (None, None)
     
     def increment(self):
-        if self.ccExec == self.clockCycles:
-            self.busy = False
-        self.ccExec += 1
+        if self.busy:
+            if self.ccExec == self.clockCycles:
+                self.busy = False
+            self.ccExec += 1
         return self.busy
     
     def isBusy(self):

@@ -1,6 +1,6 @@
 class registerFile:
     def __init__(self):
-        self.registers = [0, 1, 2, 3, 4, 5, 6, 7]
+        self.registers = [10, 20, 30, 40, 50, 60, 70, 80]
         self.subscription = [None, None, None, None, None, None, None, None]
         #subscription format is "station name + station number". example: "ALU2"
 

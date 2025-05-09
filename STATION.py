@@ -30,17 +30,26 @@ class restation:
         self.MULDIV2OP2 = None
         self.MULDIV2OP = None
         
-        self.LOAD1 = 'empty'
+        self.LOAD1Empty = True
         self.LOAD1Ready = False
+        self.LOAD1OP1 = None
+        self.LOAD1OP2 = None
         
-        self.LOAD2 = 'empty'
+        self.LOAD2Empty = True
         self.LOAD2Ready = False
+        self.LOAD2OP1 = None
+        self.LOAD2OP2 = None
         
-        self.STORE1 = 'empty'
+        self.STORE1Empty = True
         self.STORE1Ready = False
+        self.STORE1OP1 = None
+        self.STORE1OP2 = None
         
-        self.STORE2 = 'empty'
+        self.STORE2Empty = True
         self.STORE2Ready = False
+        self.STORE2OP1 = None
+        self.STORE2OP2 = None
+
 
     def issueMULDIV(self, instruction, registerFile):
         if(self.MULDIV1Empty == True):
@@ -96,8 +105,50 @@ class restation:
         else:
             return False
     
-    
-    def refreshALU(self, cdb, ALU1Unit, ALU2Unit, MULDIVUnit):
+    #instruction format: "LOAD R1, offset(R2)"
+    def issueLOAD(self, instruction, registerFile):
+        if(self.LOAD1Empty == True):
+            instruction = instruction.split(" ")
+            op2 = instruction[2].split("(")
+            self.LOAD1Empty = False
+
+            self.LOAD1OP1 = registerFile.getValue(int(instruction[1][1:-1]))
+            self.LOAD1OP2 = registerFile.getValue(int(op2[1][1:-1]))
+            registerFile.subscribe(int(instruction[1][1:-1]), "LOAD1")
+            return True
+        elif(self.LOAD2Empty == True):
+            instruction = instruction.split(" ")
+            op2 = instruction[2].split("(")
+            self.LOAD2Empty = False
+
+            self.LOAD2OP1 = registerFile.getValue(int(instruction[1][1:-1]))
+            self.LOAD2OP2 = registerFile.getValue(int(op2[1][1:-1]))
+            registerFile.subscribe(int(instruction[1][1:-1]), "LOAD2")
+            return True
+        else:
+            return False
+        
+    def issueSTORE(self, instruction, registerFile):
+        if(self.STORE1Empty == True):
+            instruction = instruction.split(" ")
+            op2 = instruction[1].split("(")
+            self.STORE1Empty = False
+
+            self.STORE1OP1 = registerFile.getValue(int(instruction[2][1:]))
+            self.STORE1OP2 = registerFile.getValue(int(op2[1][1:-2]))
+            return True
+        elif(self.STORE2Empty == True):
+            instruction = instruction.split(" ")
+            op2 = instruction[1].split("(")
+            self.STORE2Empty = False
+
+            self.STORE2OP1 = registerFile.getValue(int(instruction[2][1:]))
+            self.STORE2OP2 = registerFile.getValue(int(op2[1][1:-2]))
+            return True
+        else:
+            return False
+
+    def refreshUnits(self, cdb, ALU1Unit, ALU2Unit, MULDIVUnit, LS):
         if (not self.ALU1Ready) and (self.ALU1Empty != True):
             if type(self.ALU1OP1) == str:
                 if cdb[self.ALU1OP1] != None:
@@ -105,7 +156,7 @@ class restation:
             if type(self.ALU1OP2) == str:
                 if cdb[self.ALU1OP2] != None:
                     self.ALU1OP2 = cdb[self.ALU1OP2]
-            if type(self.ALU1OP1) == int and type(self.ALU1OP2) == int:
+            if type(self.ALU1OP1) != str and type(self.ALU1OP2) != str:
                 self.ALU1Ready = True
         elif self.ALU1Ready and not self.ALU1Empty:
             if ALU1Unit.isBusy() == False:
@@ -130,7 +181,7 @@ class restation:
             if type(self.ALU2OP2) == str:
                 if cdb[self.ALU2OP2] != None:
                     self.ALU2OP2 = cdb[self.ALU2OP2]
-            if type(self.ALU2OP1) == int and type(self.ALU2OP2) == int:
+            if type(self.ALU2OP1) != str and type(self.ALU2OP2) != str:
                 self.ALU2Ready = True
         elif self.ALU2Ready and not self.ALU2Empty:
             if ALU1Unit.isBusy() == False:
@@ -155,7 +206,7 @@ class restation:
             if type(self.ALU3OP2) == str:
                 if cdb[self.ALU3OP2] != None:
                     self.ALU3OP2 = cdb[self.ALU3OP2]
-            if type(self.ALU3OP1) == int and type(self.ALU3OP2) == int:
+            if type(self.ALU3OP1) != str and type(self.ALU3OP2) != str:
                 self.ALU3Ready = True
         elif self.ALU3Ready and not self.ALU3Empty:
             if ALU1Unit.isBusy() == False:
@@ -180,7 +231,7 @@ class restation:
             if type(self.MULDIV1OP2) == str:
                 if cdb[self.MULDIV1OP2] != None:
                     self.MULDIV1OP2 = cdb[self.MULDIV1OP2]
-            if type(self.MULDIV1OP1) == int and type(self.MULDIV1OP2) == int:
+            if type(self.MULDIV1OP1) != str and type(self.MULDIV1OP2) != str:
                 self.MULDIV1Ready = True
         elif self.MULDIV1Ready and not self.MULDIV1Empty:
             if MULDIVUnit.isBusy() == False:
@@ -198,7 +249,7 @@ class restation:
             if type(self.MULDIV2OP2) == str:
                 if cdb[self.MULDIV2OP2] != None:
                     self.MULDIV2OP2 = cdb[self.MULDIV2OP2]
-            if type(self.MULDIV2OP1) == int and type(self.MULDIV2OP2) == int:
+            if type(self.MULDIV2OP1) != str and type(self.MULDIV2OP2) != str:
                 self.MULDIV2Ready = True
         elif self.MULDIV2Ready and not self.MULDIV2Empty:
             if MULDIVUnit.isBusy() == False:
@@ -208,3 +259,55 @@ class restation:
                 self.MULDIV2OP2 = None
                 self.MULDIV2OP = None
                 self.MULDIV2Empty = True
+
+        if (not self.LOAD1Ready) and (self.LOAD1Empty != True):
+            print(type(self.LOAD1OP1), type(self.LOAD1OP2))
+            if type(self.LOAD1OP1) == str:
+                if cdb[self.LOAD1OP1] != None:
+                    self.LOAD1OP1 = cdb[self.LOAD1OP1]
+            if type(self.LOAD1OP2) == str:
+                if cdb[self.LOAD1OP2] != None:
+                    self.LOAD1OP2 = cdb[self.LOAD1OP2]
+            if type(self.LOAD1OP1) != str and type(self.LOAD1OP2) != str:
+                self.LOAD1Ready = True
+        elif self.LOAD1Ready and not self.LOAD1Empty:
+            if LS.isBusy() == False:
+                LS.exec(self.LOAD1OP1, self.LOAD1OP2, "load", "LOAD1")
+                self.LOAD1Ready = False
+                self.LOAD1OP1 = None
+                self.LOAD1OP2 = None
+                self.LOAD1Empty = True
+
+        if (not self.LOAD2Ready) and (self.LOAD2Empty != True):
+            if type(self.LOAD2OP1) == str:
+                if cdb[self.LOAD2OP1] != None:
+                    self.LOAD2OP1 = cdb[self.LOAD2OP1]
+            if type(self.LOAD2OP2) == str:
+                if cdb[self.LOAD2OP2] != None:
+                    self.LOAD2OP2 = cdb[self.LOAD2OP2]
+            if type(self.LOAD2OP1) != int and type(self.LOAD2OP2) != int:
+                self.LOAD2Ready = True
+        elif self.LOAD2Ready and not self.LOAD2Empty:
+            if LS.isBusy() == False:
+                LS.exec(self.LOAD2OP1, self.LOAD2OP2, "load", "LOAD2")
+                self.LOAD2Ready = False
+                self.LOAD2OP1 = None
+                self.LOAD2OP2 = None
+                self.LOAD2Empty = True
+
+        if (not self.STORE1Ready) and (self.STORE1Empty != True):
+            if type(self.STORE1OP1) == str:
+                if cdb[self.STORE1OP1] != None:
+                    self.STORE1OP1 = cdb[self.STORE1OP1]
+            if type(self.STORE1OP2) == str:
+                if cdb[self.STORE1OP2] != None:
+                    self.STORE1OP2 = cdb[self.STORE1OP2]
+            if type(self.STORE1OP1) != str and type(self.STORE1OP2) != str:
+                self.STORE1Ready = True
+        elif self.STORE1Ready and not self.STORE1Empty:
+            if LS.isBusy() == False:
+                LS.exec(self.STORE1OP1, self.STORE1OP2, "store", "STORE1")
+                self.STORE1Ready = False
+                self.STORE1OP1 = None
+                self.STORE1OP2 = None
+                self.STORE1Empty = True
