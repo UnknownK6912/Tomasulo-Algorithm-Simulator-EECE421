@@ -10,8 +10,6 @@ except AssertionError as e:
     print(f"Error: {e}")
     exit(1)
 
-
-num_instr = int(input("How many instructions do you want to generate?: "))
 output_file = open("InstructionLog.txt", "w") # create a file where instructions will be written
 
 
