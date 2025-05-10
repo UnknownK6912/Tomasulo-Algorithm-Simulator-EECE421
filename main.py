@@ -3,7 +3,6 @@ import LS
 import MULDIV
 import REGISTER
 import STATION
-import random
 
 # you can generate instructions using the InstructionGen.py file
 
