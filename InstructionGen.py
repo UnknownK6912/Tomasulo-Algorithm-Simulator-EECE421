@@ -25,13 +25,13 @@ def gen_instr(num_instr): # function to generate instructions and write them to 
         instr_choice = random.choices(instr_types, weights=instr_probs, k=1)[0] # choose an instruction type based on probabilities defined above
 
         if instr_choice in ["ADD", "SUB", "MUL", "DIV"]: # format <OP> <DEST>, <SRC1>, <SRC2> for add, sub, mul and div
-            instr_line = str(instr_choice) + " R" + str(random.randint(0,7)) + ", R" + str(random.randint(0,7)) + ", R" + str(random.randint(0,7)) + "\n"
+            instr_line = str(instr_choice) + " R" + str(random.randint(0,num_reg-1)) + ", R" + str(random.randint(0,num_reg-1)) + ", R" + str(random.randint(0,num_reg-1)) + "\n"
     
         elif instr_choice == "LOAD": # format <OP> <DEST>, <OFFSET>(<BASE>) for load
-            instr_line = str(instr_choice) + " R" + str(random.randint(0,7)) + ", " + str(random.randint(0,1000)) + "(R" + str(random.randint(0,7)) + ")"+ "\n"
+            instr_line = str(instr_choice) + " R" + str(random.randint(0,num_reg-1)) + ", " + str(random.randint(0,1000)) + "(R" + str(random.randint(0,num_reg-1)) + ")"+ "\n"
     
         elif instr_choice == "STORE": # format <OP> <OFFSET>(<BASE>), <SRC>
-            instr_line = str(instr_choice) + " " + str(random.randint(0,1000)) + "(R" + str(random.randint(0,7)) + ")" + ", R" + str(random.randint(0,7)) + "\n"
+            instr_line = str(instr_choice) + " " + str(random.randint(0,1000)) + "(R" + str(random.randint(0,num_reg-1)) + ")" + ", R" + str(random.randint(0,num_reg-1)) + "\n"
 
         output_file.write(instr_line) # written to output file, to be re-read later by the main program
 
