@@ -6,8 +6,8 @@ import STATION
 
 # you can generate instructions using the InstructionGen.py file
 
-maxCC = 100
-issue_width = 2 # configurable issue width
+maxCC = 100 # clock cycles
+issue_width = 1 # configurable issue width
 instruction_file = "InstructionLog.txt" # output file from InstructionGen.py
 
 
@@ -66,7 +66,7 @@ for cc in range(1, maxCC + 1):
     cdb_this_cycle = cdb_structure.copy() # Start with all None
 
     # Stage 1
-    # Increment FUs. 
+    # Increment FUs 
     # If an operation completes, get its result.
     # The FU's getResult() method returns (value, tag_of_producing_RS)
     
